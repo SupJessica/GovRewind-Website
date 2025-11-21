@@ -7,6 +7,7 @@
   <meta name="description" content="Gov Rewind is a browser extension that makes it easy to see earlier versions of U.S. government websites for comparison, context, and historical reference." />
   <style>
     :root {
+      /* Dark theme defaults */
       --bg: #0f172a;
       --bg-elevated: #020617;
       --accent: #38bdf8;
@@ -38,6 +39,21 @@
       justify-content: center;
     }
 
+    /* Light theme overrides */
+    body.theme-light {
+      --bg: #e5e7eb;
+      --bg-elevated: #f9fafb;
+      --accent: #2563eb;
+      --accent-soft: rgba(37,99,235,0.12);
+      --text-main: #0f172a;
+      --text-muted: #4b5563;
+      --border-subtle: #d1d5db;
+      --danger: #dc2626;
+      --shadow-soft: 0 18px 45px rgba(148,163,184,0.55);
+      background: radial-gradient(circle at top, #dbeafe 0, #e5e7eb 40%, #f9fafb 100%);
+      color: var(--text-main);
+    }
+
     a {
       color: var(--accent);
       text-decoration: none;
@@ -60,6 +76,10 @@
       padding: 28px 24px 20px;
       backdrop-filter: blur(20px);
     }
+    body.theme-light .card {
+      background: linear-gradient(135deg, #ffffff, #f3f4f6);
+      border-color: rgba(209,213,219,0.9);
+    }
 
     @media (min-width: 768px) {
       .card {
@@ -70,11 +90,11 @@
     .header {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
+      align-items: flex-start; /* align logo and title at top */
       gap: 16px;
       margin-bottom: 22px;
     }
-	
+
     .logo-wrap {
       width: 128px;
       height: 128px;
@@ -84,6 +104,9 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 18px 40px rgba(34,197,94,0.55);
+    }
+    body.theme-light .logo-wrap {
+      box-shadow: 0 16px 32px rgba(34,197,94,0.35);
     }
 
     .logo-wrap img {
@@ -115,6 +138,9 @@
       background: var(--accent-soft);
       color: var(--accent);
       border: 1px solid rgba(56,189,248,0.4);
+    }
+    body.theme-light .tag {
+      border-color: rgba(37,99,235,0.4);
     }
 
     .subtitle {
@@ -149,10 +175,18 @@
       color: #0b1120;
       box-shadow: 0 10px 25px rgba(56,189,248,0.5);
     }
+    body.theme-light .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #eff6ff;
+      box-shadow: 0 10px 22px rgba(59,130,246,0.45);
+    }
     .btn-primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 12px 32px rgba(56,189,248,0.6);
       text-decoration: none;
+    }
+    body.theme-light .btn-primary:hover {
+      box-shadow: 0 12px 30px rgba(37,99,235,0.55);
     }
 
     .btn-ghost {
@@ -164,6 +198,15 @@
       background: rgba(15,23,42,0.9);
       border-color: rgba(248,250,252,0.4);
       text-decoration: none;
+    }
+    body.theme-light .btn-ghost {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(209,213,219,0.9);
+      color: #111827;
+    }
+    body.theme-light .btn-ghost:hover {
+      background: #e5edff;
+      border-color: rgba(59,130,246,0.6);
     }
 
     .section-wrapper {
@@ -189,6 +232,10 @@
       background: radial-gradient(circle at top, rgba(15,23,42,0.95), rgba(15,23,42,0.98));
       padding: 16px 16px 14px;
     }
+    body.theme-light .panel {
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-color: rgba(209,213,219,0.95);
+    }
 
     .panel h2 {
       margin: 0 0 10px;
@@ -205,6 +252,10 @@
     .panel:target {
       border-color: rgba(56,189,248,0.9);
       box-shadow: 0 0 0 1px rgba(56,189,248,0.6), 0 18px 40px rgba(15,23,42,0.9);
+    }
+    body.theme-light .panel:target {
+      border-color: rgba(37,99,235,0.9);
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.6), 0 18px 36px rgba(148,163,184,0.8);
     }
 
     .panel:target h2 {
@@ -259,6 +310,11 @@
       border: 1px solid rgba(56,189,248,0.9);
       box-shadow: 0 0 0 1px rgba(56,189,248,0.6), 0 18px 40px rgba(15,23,42,0.95);
       padding: 16px 16px 14px;
+    }
+    body.theme-light .faq-panel {
+      background: linear-gradient(135deg, #f9fafb, #e5edff);
+      border-color: rgba(37,99,235,0.9);
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.6), 0 18px 40px rgba(148,163,184,0.9);
     }
 
     .faq-panel--visible {
@@ -320,12 +376,21 @@
       color: var(--text-main);
       transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
     }
+    body.theme-light .store-btn {
+      background: #f9fafb;
+      border-color: rgba(209,213,219,0.95);
+      color: #111827;
+    }
 
     .store-btn:hover {
       background: rgba(15,23,42,0.95);
       border-color: rgba(248,250,252,0.55);
       text-decoration: none;
       transform: translateY(-1px);
+    }
+    body.theme-light .store-btn:hover {
+      background: #e5edff;
+      border-color: rgba(59,130,246,0.6);
     }
 
     .store-left {
@@ -381,6 +446,9 @@
         0 18px 40px rgba(15, 23, 42, 0.9);
       background: radial-gradient(circle at 10% 0, rgba(254, 240, 138, 0.18) 0, rgba(15, 23, 42, 0.96) 55%);
     }
+    body.theme-light .store-btn--highlight {
+      background: radial-gradient(circle at 10% 0, rgba(254, 240, 138, 0.22) 0, #fefce8 55%);
+    }
 
     .store-name {
       font-weight: 500;
@@ -410,6 +478,9 @@
       font-size: 0.8rem;
       color: var(--text-muted);
     }
+    body.theme-light .footer {
+      border-top-color: rgba(148,163,184,0.9);
+    }
 
     .footer-left, .footer-right {
       display: flex;
@@ -437,6 +508,39 @@
       border-radius: var(--radius-pill);
       border: 1px solid rgba(148,163,184,0.5);
       background: rgba(15,23,42,0.8);
+    }
+    body.theme-light .donate-link {
+      background: #ffffff;
+      border-color: rgba(209,213,219,0.9);
+    }
+
+    /* Theme toggle button in footer */
+    .theme-toggle {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 4px 10px;
+      background: rgba(15,23,42,0.9);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-toggle span {
+      opacity: 0.9;
+    }
+    .theme-toggle:hover {
+      border-color: rgba(248,250,252,0.7);
+      background: rgba(15,23,42,1);
+    }
+    body.theme-light .theme-toggle {
+      background: #ffffff;
+      border-color: rgba(209,213,219,0.9);
+    }
+    body.theme-light .theme-toggle:hover {
+      background: #e5edff;
+      border-color: rgba(59,130,246,0.6);
     }
   </style>
 </head>
@@ -607,6 +711,10 @@
             © <span id="year"></span> Gov Rewind – Created by Jessica Hartmann
           </span>
           <span>MIT License</span>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">
+            <span id="theme-toggle-icon">🌙</span>
+            <span id="theme-toggle-label">Dark mode</span>
+          </button>
         </div>
         <div class="footer-right">
           <a class="donate-link" href="https://supjessica.com" target="_blank" rel="noopener">
@@ -623,7 +731,67 @@
       var yearEl = document.getElementById('year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-      // Store homepages for now
+      // Theme handling
+      var themeToggle = document.getElementById('theme-toggle');
+      var themeIcon = document.getElementById('theme-toggle-icon');
+      var themeLabel = document.getElementById('theme-toggle-label');
+
+      function applyTheme(mode) {
+        if (mode === 'light') {
+          document.body.classList.add('theme-light');
+          document.body.classList.remove('theme-dark');
+          if (themeToggle) {
+            themeToggle.setAttribute('aria-pressed', 'true');
+          }
+          if (themeIcon) themeIcon.textContent = '☀️';
+          if (themeLabel) themeLabel.textContent = 'Light mode';
+        } else {
+          document.body.classList.remove('theme-light');
+          document.body.classList.add('theme-dark');
+          if (themeToggle) {
+            themeToggle.setAttribute('aria-pressed', 'false');
+          }
+          if (themeIcon) themeIcon.textContent = '🌙';
+          if (themeLabel) themeLabel.textContent = 'Dark mode';
+        }
+      }
+
+      // Initial theme: stored preference, else system, else dark
+      (function initTheme() {
+        var stored = null;
+        try {
+          stored = localStorage.getItem('govRewindTheme');
+        } catch (e) {
+          stored = null;
+        }
+
+        var mode;
+        if (stored === 'light' || stored === 'dark') {
+          mode = stored;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          mode = 'light';
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          mode = 'dark';
+        } else {
+          mode = 'dark';
+        }
+        applyTheme(mode);
+      })();
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          var isLight = document.body.classList.contains('theme-light');
+          var newMode = isLight ? 'dark' : 'light';
+          applyTheme(newMode);
+          try {
+            localStorage.setItem('govRewindTheme', newMode);
+          } catch (e) {
+            // ignore storage errors
+          }
+        });
+      }
+
+      // For now, use store homepages
       var STORE_URLS = {
         chrome: "https://chromewebstore.google.com/",
         edge: "https://microsoftedge.microsoft.com/addons",
