@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gov Rewind – View Earlier Versions of U.S. Government Websites</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gov Rewind is a browser extension that makes it easy to see earlier versions of U.S. government websites for comparison, context, and historical reference." />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-elevated: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.1);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --danger: #f97373;
+      --shadow-soft: 0 24px 60px rgba(0,0,0,0.55);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #172554 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 960px;
+      padding: 32px 16px 24px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(2,6,23,0.98));
+      border-radius: 24px;
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: var(--shadow-soft);
+      padding: 28px 24px 20px;
+      backdrop-filter: blur(20px);
+    }
+
+    @media (min-width: 768px) {
+      .card {
+        padding: 32px 32px 24px;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+	
+    .logo-wrap {
+      width: 128px;
+      height: 128px;
+      border-radius: 36px;
+      background: radial-gradient(circle at 30% 20%, #4ade80 0, #22c55e 30%, #0f172a 85%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 18px 40px rgba(34,197,94,0.55);
+    }
+
+    .logo-wrap img {
+      width: 112px;
+      height: 112px;
+      border-radius: 28px;
+    }
+
+    .title-block {
+      flex: 1 1 auto;
+      min-width: 200px;
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.17em;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56,189,248,0.4);
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 40rem;
+    }
+
+    .hero-actions {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border-radius: var(--radius-pill);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #0b1120;
+      box-shadow: 0 10px 25px rgba(56,189,248,0.5);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 32px rgba(56,189,248,0.6);
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      background: rgba(15,23,42,0.6);
+      border-color: rgba(148,163,184,0.4);
+      color: var(--text-main);
+    }
+    .btn-ghost:hover {
+      background: rgba(15,23,42,0.9);
+      border-color: rgba(248,250,252,0.4);
+      text-decoration: none;
+    }
+
+    .section-wrapper {
+      position: relative;
+      margin-top: 20px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .section-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at top, rgba(15,23,42,0.95), rgba(15,23,42,0.98));
+      padding: 16px 16px 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .panel p {
+      margin: 0 0 8px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    /* Highlight the section we scrolled to */
+    .panel:target {
+      border-color: rgba(56,189,248,0.9);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.6), 0 18px 40px rgba(15,23,42,0.9);
+    }
+
+    .panel:target h2 {
+      color: var(--accent);
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .feature-bullet {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #4ade80 0, #22c55e 40%, #14532d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex: 0 0 auto;
+      color: #0b1120;
+    }
+
+    .feature-muted {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    /* FAQ overlay panel (always above, no dimming underneath) */
+    .faq-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      margin: 0 auto;
+      max-width: 100%;
+      z-index: 10;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(15,23,42,0.99));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(56,189,248,0.9);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.6), 0 18px 40px rgba(15,23,42,0.95);
+      padding: 16px 16px 14px;
+    }
+
+    .faq-panel--visible {
+      display: block;
+      transform: translateY(-4px);
+    }
+
+    .faq-panel h2 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .faq-list {
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0;
+    }
+
+    .faq-item {
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+
+    .faq-a {
+      color: var(--text-muted);
+      line-height: 1.35;
+      font-size: 0.84rem;
+    }
+
+    .faq-hint {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .store-links {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .store-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.75);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    }
+
+    .store-btn:hover {
+      background: rgba(15,23,42,0.95);
+      border-color: rgba(248,250,252,0.55);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    .store-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .store-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #0b1120;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .store-icon--chrome {
+      background: conic-gradient(
+        from 210deg,
+        #facc15 0deg 120deg,
+        #22c55e 120deg 240deg,
+        #ef4444 240deg 360deg
+      );
+    }
+
+    .store-icon--edge {
+      background: radial-gradient(circle at 30% 20%, #22c1c3 0, #0ea5e9 40%, #1e40af 100%);
+      color: #ecfeff;
+    }
+
+    .store-icon--firefox {
+      background: radial-gradient(circle at 30% 10%, #f97316 0, #f97316 30%, #a855f7 80%, #312e81 100%);
+      color: #fffbeb;
+    }
+
+    .store-icon--opera {
+      background: radial-gradient(circle at 30% 20%, #ef4444 0, #b91c1c 50%, #111827 100%);
+      color: #fee2e2;
+    }
+
+    /* Extra highlight for the browser the user is currently on */
+    .store-btn--highlight {
+      border-color: rgba(250, 204, 21, 0.95); /* warm yellow border */
+      box-shadow:
+        0 0 0 1px rgba(250, 204, 21, 0.9),
+        0 0 22px rgba(250, 204, 21, 0.65),
+        0 18px 40px rgba(15, 23, 42, 0.9);
+      background: radial-gradient(circle at 10% 0, rgba(254, 240, 138, 0.18) 0, rgba(15, 23, 42, 0.96) 55%);
+    }
+
+    .store-name {
+      font-weight: 500;
+    }
+
+    .store-tagline {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .badge-soon {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--text-muted);
+    }
+
+    .footer {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(30,64,175,0.9);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-left, .footer-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .copyright {
+      opacity: 0.9;
+    }
+
+    .donate-link {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.8);
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <header class="header">
+        <div class="logo-wrap">
+          <!-- Adjust src if your icon lives somewhere else -->
+          <img src="icons/icon-128.png" alt="Gov Rewind icon" />
+        </div>
+        <div class="title-block">
+          <div class="title">
+            Gov Rewind
+            <span class="tag">Browser Extension</span>
+          </div>
+          <p class="subtitle">
+            See how U.S. government websites looked before they were changed. Gov Rewind helps you compare earlier versions of .gov pages for context, research, and your own peace of mind.
+          </p>
+          <div class="hero-actions">
+            <!-- This button will open the right store and highlight downloads -->
+            <a id="install-btn" href="#downloads" class="btn btn-primary">
+              Install Gov Rewind
+            </a>
+            <a id="learn-btn" href="#about" class="btn btn-ghost">
+              Learn more
+            </a>
+            <a id="faq-btn" href="#faq" class="btn btn-ghost">
+              FAQ
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <div class="section-wrapper">
+        <!-- Floating FAQ panel -->
+        <article id="faq" class="panel faq-panel">
+          <h2>Frequently asked questions</h2>
+          <ul class="faq-list">
+            <li class="faq-item">
+              <div class="faq-q">Does Gov Rewind change government websites?</div>
+              <div class="faq-a">
+                No. Gov Rewind never edits or alters official pages. It only helps you open archived copies in a new tab or redirect your browser to those archived versions when you choose that option.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Is this an official government tool?</div>
+              <div class="faq-a">
+                No. Gov Rewind is an independent project by Jessica Hartmann. It simply makes it easier to reach archived copies provided by official archive sites and web archives.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Does Gov Rewind work on every .gov page?</div>
+              <div class="faq-a">
+                Not every page. Gov Rewind includes lists of many known pages and tries to match others based on their URLs and titles. When there is no good match, it can still help you reach an archived homepage or search for older versions of the page.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Will I still be able to see the current version of a page?</div>
+              <div class="faq-a">
+                Yes. You can set Gov Rewind to show a banner instead of redirecting, so you stay on the live page and choose whether to open the archived copy. You can also disable Gov Rewind on specific sites at any time.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Does Gov Rewind send my browsing history anywhere?</div>
+              <div class="faq-a">
+                No. The extension’s matching happens inside your browser using local text lists and your settings. When you click a button to open an archive or search, your browser simply navigates there like it would for any other link.
+              </div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-q">Which browsers are supported?</div>
+              <div class="faq-a">
+                Gov Rewind is a desktop-only extension and is designed for Chrome, Microsoft Edge, and most Chromium-based browsers that can install from the Chrome Web Store (such as Brave and Vivaldi). Firefox support is planned. Safari and mobile browsers are not currently supported.
+              </div>
+            </li>
+          </ul>
+          <div class="faq-hint">
+            Tip: Click “Learn more” or “Install Gov Rewind” above to go back to the main panels.
+          </div>
+        </article>
+
+        <section class="section-grid">
+          <!-- id="about" on the panel so :target highlighting works -->
+          <article id="about" class="panel">
+            <h2>What Gov Rewind does</h2>
+            <p>
+              Gov Rewind helps you see earlier versions of many U.S. government (.gov) pages. When you visit a supported site, it looks for an archived copy and offers to send you there.
+            </p>
+            <ul class="feature-list">
+              <li>
+                <span class="feature-bullet">✓</span>
+                <span>Quickly open earlier versions of selected White House, State, EPA, CDC, and other .gov pages.</span>
+              </li>
+              <li>
+                <span class="feature-bullet">✓</span>
+                <span>Choose whether matching pages automatically redirect or simply show a gentle “View archived copy” banner.</span>
+              </li>
+              <li>
+                <span class="feature-bullet">✓</span>
+                <span>The toolbar icon changes color so you can tell at a glance if you’re on live content, an archive, or if no match was found.</span>
+              </li>
+              <li>
+                <span class="feature-bullet">✓</span>
+                <span class="feature-muted">Even when there’s no direct match, Gov Rewind can still help you reach an archived homepage or search for older versions.</span>
+              </li>
+            </ul>
+          </article>
+
+          <article id="downloads" class="panel">
+            <h2>Get Gov Rewind</h2>
+            <p>
+              Install Gov Rewind from your browser’s extension store:
+            </p>
+
+            <div class="store-links">
+              <!-- For now, point to store homepages -->
+              <a id="store-chrome" class="store-btn" href="https://chromewebstore.google.com/" target="_blank" rel="noopener">
+                <div class="store-left">
+                  <span class="store-icon store-icon--chrome">C</span>
+                  <div>
+                    <div class="store-name">Chrome Web Store</div>
+                    <div class="store-tagline">For Google Chrome, Brave, Vivaldi, and other Chromium browsers</div>
+                  </div>
+                </div>
+                <span class="badge-soon">Store homepage</span>
+              </a>
+
+              <a id="store-edge" class="store-btn" href="https://microsoftedge.microsoft.com/addons" target="_blank" rel="noopener">
+                <div class="store-left">
+                  <span class="store-icon store-icon--edge">E</span>
+                  <div>
+                    <div class="store-name">Microsoft Edge Add-ons</div>
+                    <div class="store-tagline">Optimized for Microsoft Edge</div>
+                  </div>
+                </div>
+                <span class="badge-soon">Store homepage</span>
+              </a>
+
+              <a id="store-firefox" class="store-btn" href="https://addons.mozilla.org/" target="_blank" rel="noopener">
+                <div class="store-left">
+                  <span class="store-icon store-icon--firefox">F</span>
+                  <div>
+                    <div class="store-name">Firefox Add-ons</div>
+                    <div class="store-tagline">Planned support</div>
+                  </div>
+                </div>
+                <span class="badge-soon">Store homepage</span>
+              </a>
+
+              <a id="store-opera" class="store-btn" href="https://addons.opera.com/" target="_blank" rel="noopener">
+                <div class="store-left">
+                  <span class="store-icon store-icon--opera">O</span>
+                  <div>
+                    <div class="store-name">Opera Add-ons</div>
+                    <div class="store-tagline">For Opera and Opera GX users</div>
+                  </div>
+                </div>
+                <span class="badge-soon">Store homepage</span>
+              </a>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <div class="footer-left">
+          <span class="copyright">
+            © <span id="year"></span> Gov Rewind – Created by Jessica Hartmann
+          </span>
+          <span>MIT License</span>
+        </div>
+        <div class="footer-right">
+          <a class="donate-link" href="https://supjessica.com" target="_blank" rel="noopener">
+            Support / Donate
+          </a>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      // Set year in footer
+      var yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      // Store homepages for now
+      var STORE_URLS = {
+        chrome: "https://chromewebstore.google.com/",
+        edge: "https://microsoftedge.microsoft.com/addons",
+        firefox: "https://addons.mozilla.org/"
+        // Opera isn't auto-detected/opened; users can click the button manually.
+      };
+
+      // Detect browser (simple UA sniff)
+      var ua = navigator.userAgent || "";
+      var current = "unknown";
+      if (ua.indexOf("Edg/") !== -1) {
+        current = "edge";
+      } else if (ua.indexOf("Firefox/") !== -1) {
+        current = "firefox";
+      } else if (ua.indexOf("Chrome/") !== -1) {
+        current = "chrome";
+      }
+
+      var installBtn   = document.getElementById('install-btn');
+      var learnBtn     = document.getElementById('learn-btn');
+      var faqBtn       = document.getElementById('faq-btn');
+      var faqPanel     = document.getElementById('faq');
+      var storeChrome  = document.getElementById('store-chrome');
+      var storeEdge    = document.getElementById('store-edge');
+      var storeFirefox = document.getElementById('store-firefox');
+
+      var faqOpen = false;
+
+      // Helper to highlight and move a store button to the top
+      function highlightAndPromote(el) {
+        if (!el) return;
+        el.classList.add('store-btn--highlight');
+        var parent = el.parentElement;
+        if (parent && parent.firstChild !== el) {
+          parent.insertBefore(el, parent.firstChild);
+        }
+      }
+
+      // Highlight and move the current browser's store card
+      if (current === "chrome" && storeChrome) {
+        highlightAndPromote(storeChrome);
+      } else if (current === "edge" && storeEdge) {
+        highlightAndPromote(storeEdge);
+      } else if (current === "firefox" && storeFirefox) {
+        highlightAndPromote(storeFirefox);
+      }
+
+      // Toggle FAQ panel on FAQ button click
+      if (faqBtn && faqPanel) {
+        faqBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          faqOpen = !faqOpen;
+          if (faqOpen) {
+            faqPanel.classList.add("faq-panel--visible");
+          } else {
+            faqPanel.classList.remove("faq-panel--visible");
+          }
+        });
+      }
+
+      // Close FAQ when clicking "Learn more"
+      if (learnBtn && faqPanel) {
+        learnBtn.addEventListener("click", function () {
+          if (faqOpen) {
+            faqOpen = false;
+            faqPanel.classList.remove("faq-panel--visible");
+          }
+          // let default anchor behavior handle scrolling / highlighting
+        });
+      }
+
+      // Rewire the Install button:
+      // - Always highlight the downloads panel by setting the hash
+      // - If FAQ was open, just close it (no store open)
+      // - If FAQ was not open, open the store homepage in a new tab
+      if (installBtn) {
+        var targetUrl = "";
+        if (current === "chrome") {
+          targetUrl = STORE_URLS.chrome;
+        } else if (current === "edge") {
+          targetUrl = STORE_URLS.edge;
+        } else if (current === "firefox") {
+          targetUrl = STORE_URLS.firefox;
+        }
+
+        installBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          var wasFaqOpen = faqOpen;
+
+          // Always close FAQ if open
+          if (faqPanel) {
+            faqPanel.classList.remove("faq-panel--visible");
+          }
+          faqOpen = false;
+
+          // Highlight the downloads panel on this page
+          window.location.hash = "#downloads";
+
+          // Only open store automatically if FAQ was NOT open
+          if (!wasFaqOpen && targetUrl) {
+            window.open(targetUrl, "_blank", "noopener");
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
