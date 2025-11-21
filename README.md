@@ -15,19 +15,6 @@ The primary purpose of this repository is to host the public landing page for Go
 
 Because the page is static and self-contained, this repository should remain valid even as the extension itself evolves over time. Updates to the page content or styling may happen occasionally, but there is no expectation of frequent changes.
 
-## Local preview
-
-If you want to view or work with this page locally:
-
-1. Clone the repository:
-
-    git clone https://github.com/SupJessica/GovRewind-Website.git
-    cd GovRewind-Website
-
-2. Open `index.html` directly in your browser, or serve it with any simple static file server.
-
-No additional tooling is required.
-
 ## Issues and contributions
 
 This repository primarily exists as the upstream source for the live Gov Rewind landing page. While you are welcome to open issues or pull requests, there is no guarantee of review or response.
